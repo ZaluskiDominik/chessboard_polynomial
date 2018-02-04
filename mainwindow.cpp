@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include <QStack>
 #include <vector>
-#include <QDebug>
+#include <QMessageBox>
 
 mainWindow::mainWindow(QWidget *parent) :
     QDialog(parent, Qt::WindowCloseButtonHint | Qt::WindowTitleHint)
@@ -162,7 +162,7 @@ void mainWindow::compute(auto& fields, QStack<QPoint> &marked, int* result, int 
 void mainWindow::resizeEvent(QResizeEvent *)
 {
     //resizing groupBox with spinBox
-    groupBox->setGeometry(5, 5, 150, 60);
+    groupBox->setGeometry(5, 5, 150, 80);
 
     //resizing computeBotton
     computeButton->setGeometry(groupBox->width() + 5 + ((width() - 10 - groupBox->width())/2) - 100, 5, 200, groupBox->height());
@@ -195,6 +195,17 @@ void mainWindow::onComputeClicked()
     //calculate polynomial
     compute(fields, markedFields, polynomial, 0);
 
-    for (int i=0 ; i<size ; i++)
-        qDebug()<<i<<": "<<polynomial[i];
+    QMessageBox* showResult=new QMessageBox(this);
+    QFont f("Arial", 10);
+    f.setBold(true);
+    showResult->setFont(f);
+    showResult->setWindowTitle("Polynomial");
+
+    QString text="1 +";
+    for (int i=1 ; i<size && polynomial[i] ; i++)
+        text+=" " + QString::number(polynomial[i]) + "x^" + QString::number(i) + " +";
+
+    text.resize(text.size()-2);
+    showResult->setText(text);
+    showResult->show();
 }
